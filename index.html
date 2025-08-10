@@ -6,144 +6,219 @@
 <title>Text 2 Emoji — Encrypt / Decrypt</title>
 <style>
 :root {
-  --bg-gradient: linear-gradient(135deg, #1f1c2c, #928dab);
-  --panel-bg: rgba(255, 255, 255, 0.05);
+  --bg-gradient: linear-gradient(135deg, #22294d 12%, #456bb3 60%, #acb1d6 100%);
+  --panel-bg: rgba(255,255,255,0.04);
   --panel-blur: blur(12px);
-  --text-color: #ffffff;
-  --muted-color: rgba(255,255,255,0.7);
-  --accent-gradient: linear-gradient(135deg, #6a11cb, #2575fc);
-  --error-bg: rgba(255, 80, 80, 0.15);
-  --error-text: #ff8080;
-  --border-radius: 14px;
-  --transition: 0.3s ease;
+  --text-color: #fafbfc;
+  --muted-color: #a9b2c6;
+  --accent-gradient: linear-gradient(135deg, #5f89ff, #ab3bee 80%);
+  --error-bg: rgba(255,35,93,0.16);
+  --error-text: #ff5d84;
+  --border-radius: 15px;
+  --faq-q-bg: linear-gradient(88deg,#eaefff 76%,#d4daff 100%);
+  --faq-q-hover: linear-gradient(88deg,#dae7ff 80%,#c6d1ff 100%);
+  --faq-active-bg: #f7f7fd;
+  --faq-icon: #8c96b4;
+  --faq-icon-active: #6748b8;
+  --faq-a-color: #3e4677;
+  --transition: 280ms cubic-bezier(.42, 0, .25, 1);
 }
 
 body.light {
-  --bg-gradient: linear-gradient(135deg, #f0f2f5, #d0d4db);
-  --panel-bg: rgba(0, 0, 0, 0.05);
-  --text-color: #111111;
-  --muted-color: rgba(0,0,0,0.5);
+  --bg-gradient: linear-gradient(110deg,#dbe7ff 32%, #deeafc 100%);
+  --panel-bg: rgba(0,0,0,0.035);
+  --text-color: #20232c;
+  --muted-color: #7280a7;
+  --accent-gradient: linear-gradient(117deg, #527dfe, #8c4ac8 90%);
   --error-text: #d63031;
+  --faq-icon: #687bc1;
+  --faq-icon-active: #864dd5;
+  --faq-q-bg: linear-gradient(88deg,#f6f8ff 70%,#eaf2ff 100%);
+  --faq-q-hover: linear-gradient(88deg,#eaf2ff 88%,#deeafc 100%);
+  --faq-a-color: #334173;
 }
 
+html,body{height:100%;margin:0;background:var(--bg-gradient);color:var(--text-color);transition:background 0.5s,color 0.5s;}
 *{box-sizing:border-box;font-family:'Inter',system-ui,sans-serif;}
-html,body{height:100%;margin:0;background:var(--bg-gradient);color:var(--text-color);transition:background 0.5s ease,color 0.5s ease;}
-.wrap{max-width:880px;margin:48px auto;padding:32px;text-align:center;}
-h1{font-size:52px;font-weight:700;letter-spacing:-1px;margin:20px 0;text-shadow:0 2px 8px rgba(0,0,0,0.3);}
+.wrap{max-width:420px;margin:48px auto 0 auto;padding:32px 2vw 24px 2vw;
+  background:var(--panel-bg);backdrop-filter:var(--panel-blur);border-radius:38px;box-shadow:0 2px 32px rgba(0,0,0,0.11);text-align:center;}
+h1{font-size:44px;font-weight:700;letter-spacing:-1px;margin:6px 0 18px;text-shadow:0 2px 12px rgba(0,0,0,0.12);}
+@media(max-width:600px){h1{font-size:32px;}.wrap{padding:12px 2vw 14px;border-radius:19px;}}
 
-/* Mode buttons */
-.controls .seg{background:var(--panel-bg);backdrop-filter:var(--panel-blur);
-border-radius:var(--border-radius);padding:8px;display:inline-flex;gap:8px;margin-bottom:16px;}
-.seg button{background:transparent;border:0;color:var(--muted-color);padding:10px 20px;border-radius:10px;cursor:pointer;transition:var(--transition);font-size:16px;}
-.seg button.active{background:var(--accent-gradient);color:white;box-shadow:0 4px 14px rgba(0,0,0,0.4);font-weight:600;transform:scale(1.05);}
+.controls .seg{display:flex;gap:0;background:var(--panel-bg);border-radius:16px;overflow:hidden;margin-bottom:22px;border:1px solid rgba(140,140,140,0.13);}
+.seg button{
+  flex:1 0 0%;background:transparent;border:0;color:var(--muted-color);
+  padding:14px 0;font-size:16px;font-weight:600;transition:all var(--transition);
+  border-radius:0;cursor:pointer;outline:none;z-index:1;position:relative;
+}
+.seg button.active{
+  background:var(--accent-gradient);color:white;box-shadow:0 5px 12px -4px #0007;
+}
 
-/* Inputs */
-label{display:block;color:var(--muted-color);margin:14px 0 6px;font-size:14px;text-align:left;}
-textarea,input[type=text],input[type=password]{width:100%;background:var(--panel-bg);backdrop-filter:var(--panel-blur);border:1px solid rgba(255,255,255,0.1);
-padding:14px;border-radius:var(--border-radius);color:var(--text-color);resize:vertical;min-height:70px;transition:var(--transition),border-color 0.3s ease;font-size:15px;}
-textarea:focus,input:focus{outline:none;border-color:#6a11cb;box-shadow:0 0 12px rgba(106,17,203,0.6);}
-input.error,textarea.error{border-color:#ff4d4d !important;box-shadow:0 0 12px rgba(255,77,77,0.7) !important;}
-
-/* Buttons */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;background:var(--accent-gradient);border:0;padding:12px 14px;
-border-radius:var(--border-radius);color:white;cursor:pointer;width:100%;font-weight:600;transition:var(--transition);font-size:16px;}
-.btn:hover{transform:scale(1.03);box-shadow:0 4px 16px rgba(0,0,0,0.4);}
-
-/* Result */
-.result{margin-top:16px;background:var(--panel-bg);backdrop-filter:var(--panel-blur);padding:14px;border-radius:var(--border-radius);
-word-break:break-word;min-height:54px;font-size:15px;white-space:pre-wrap;}
-
-/* Copy/Clear */
-.copyBtn{padding:8px 12px;border-radius:10px;background:rgba(255,255,255,0.08);border:0;color:var(--muted-color);
-cursor:pointer;transition:var(--transition);font-size:14px;user-select:none;}
-.copyBtn:hover{color:white;background:rgba(255,255,255,0.15);}
-
-/* Error box */
-.error{margin-top:8px;padding:8px 12px;background:var(--error-bg);color:var(--error-text);
-border-radius:8px;font-weight:600;font-size:14px;user-select:none;}
-
-/* Password strength */
-.password-strength{margin-top:5px;height:8px;background:#ddd;border-radius:8px;overflow:hidden;}
-.password-strength-bar{height:100%;width:0%;transition:width 0.3s ease,background-color 0.3s ease;}
-.strength-text{text-align:left;font-size:12px;margin-top:3px;color:var(--muted-color);}
-
-/* Share buttons */
-.share-section{margin-top:14px;display:flex;justify-content:center;gap:16px;}
-.share-section button{background:transparent;border:none;cursor:pointer;font-size:26px;color:var(--muted-color);transition:color 0.3s ease;}
-.share-section button:hover{color:#6a11cb;}
-
-/* Footer */
-footer{margin-top:24px;color:var(--muted-color);font-size:14px;text-align:center;padding:10px 0;border-top:1px solid rgba(255,255,255,0.1);}
-
-/* Rotate */
+label{display:block;font-weight:500;color:var(--muted-color);margin:14px 0 8px 2px;font-size:15px;text-align:left;}
+textarea,input[type=password]{width:100%;background:var(--panel-bg);backdrop-filter:var(--panel-blur);border:1px solid rgba(255,255,255,0.11);
+  padding:16px 14px;border-radius:var(--border-radius);color:var(--text-color);resize:vertical;min-height:70px;
+  font-size:1rem;box-shadow:0 1px 7px rgba(0,0,0,0.05);transition:var(--transition),border-color 0.2s;
+}
+textarea:focus,input:focus{outline:none;border-color:#5f89ff;box-shadow:0 0 12px #3c6cfa25;}
+input.error,textarea.error{border-color:#ff4d4d !important;box-shadow:0 0 9px #ffcccc7b !important;background:rgba(255,70,70,0.03);}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;
+  background:var(--accent-gradient);border:0;padding:14px 0;font-weight:600;font-size:16.7px;
+  width:100%;border-radius:var(--border-radius);color:white;cursor:pointer;
+  transition:var(--transition);margin-top:15px;box-shadow:0 2px 18px -7px #0007;}
+.btn:hover{transform:scale(1.025);}
+.btn:active{transform:scale(0.97);}
+.btn:disabled{opacity:.7;cursor:not-allowed;}
+.result{margin-top:19px;background:var(--panel-bg);backdrop-filter:var(--panel-blur);padding:16px 13px 16px 13px;border-radius:var(--border-radius);word-break:break-word;min-height:48px;box-shadow:0 1.5px 12px #0002;font-size:15px;white-space:pre-wrap;}
+.result:empty{min-height:0;padding:0;border:none;box-shadow:none;}
+.copy-group{display:flex;gap:9px;margin-top:9px;}
+.copyBtn{flex:1 1 0%;padding:10px 2px;border-radius:10px;background:rgba(255,255,255,0.16);border:0;color:var(--muted-color);
+  cursor:pointer;transition:var(--transition);font-size:14px;font-weight:600;user-select:none;}
+.copyBtn:hover{color:#fff;background:rgba(120,120,255,0.14);}
+.copyBtn:active{color:#5f89ff;}
+.error{margin-top:8px;padding:10px 14px;background:var(--error-bg);color:var(--error-text);border-radius:8px;font-weight:600;font-size:14px;user-select:none;box-shadow:0 1px 7px #ffcccc36;}
+.share-section{margin-top:13px;display:flex;justify-content:center;gap:13px;}
+.share-section button{background:transparent;border:none;cursor:pointer;font-size:25px;color:var(--muted-color);transition:color .23s;}
+.share-section button:hover{color:#654de6;}
+footer{margin-top:28px;color:var(--muted-color);font-size:15px;text-align:center;padding:18px 0 6px;font-weight:500;letter-spacing:.01em;border-top:1px solid rgba(255,255,255,0.07);}
+@media(max-width:600px){.share-section{font-size:17px;}footer{padding:11px 0 8px;}}
 @keyframes rotate{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
 .rotating{animation:rotate 1s linear infinite;}
+#darkModeToggle{position:fixed;top:16px;right:16px;background:var(--panel-bg);border:none;border-radius:20px;
+padding:7px 13px;cursor:pointer;color:var(--text-color);font-weight:600;box-shadow:0 2px 10px #0002;}
+#darkModeToggle:active{transform:scale(0.97);}
+@media(max-width:650px){#darkModeToggle{top:8px;right:8px;padding:7px 13px;font-size:15px;}}
 
-/* Theme toggle */
-#darkModeToggle{position:fixed;top:12px;right:12px;background:var(--panel-bg);border:none;border-radius:20px;
-padding:6px 12px;cursor:pointer;color:var(--text-color);font-weight:600;box-shadow:0 2px 8px rgba(0,0,0,0.15);}
-
-/* Mobile */
-@media(max-width:600px){
-  h1{font-size:38px;}
-  .wrap{padding:16px;}
-  .btn{font-size:14px;}
+/* FAQ Section Styles */
+.faq-section{margin:38px auto 0 auto;max-width:470px;background:var(--faq-q-bg);
+  padding:35px 25px 18px 25px;border-radius:28px;box-shadow:0 1px 18px #0003;}
+.faq-section h2{margin-top:0;font-size:1.62rem;letter-spacing:-.5px;text-align:left;font-weight:700;margin-bottom:16px;color:#4c5997;}
+.faq-list{list-style:none;padding:0;}
+.faq-list li{margin:0;padding:0;border-bottom:1px solid #e6e7f3;}
+.faq-list li:last-child{border-bottom:none;}
+.faq-q{display:flex;align-items:center;justify-content:space-between;
+   font-size:1.07rem;padding:13px 0 12px 0;font-weight:600;color:#4c5997;cursor:pointer;
+   background:var(--faq-q-bg);border-radius:10px;transition:background .22s;
+   letter-spacing:.01em;user-select:none;}
+.faq-q:hover{background:var(--faq-q-hover);}
+.faq-q .faq-toggle-icon{
+  font-size:22px;margin-right:7px;display:inline-block;transition:color .22s,transform .2s;
+  color:var(--faq-icon);
 }
+.faq-list li.active .faq-q .faq-toggle-icon{
+  color:var(--faq-icon-active);
+  transform:rotate(90deg);
+}
+.faq-list li.active .faq-q{background:var(--faq-active-bg);}
+.faq-a{
+  font-size:15.2px;margin:0 0 13px 0;color:var(--faq-a-color);line-height:1.77;
+  background:none;padding:7px 0 9px 0;display:none;animation:fadeInActive .33s;
+}
+.faq-list li.active .faq-a{display:block;}
+@keyframes fadeInActive{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:translateY(0);}
+}
+@media(max-width:600px){.faq-section{padding:16px 4vw 13px 4vw;}}
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
 </head>
 <body>
-<button id="darkModeToggle">Light Mode</button>
-
+<button id="darkModeToggle" aria-pressed="false">Light Mode</button>
 <div class="wrap">
-<h1 id="pageTitle">Text 2 Emoji</h1>
-<div class="controls">
-  <div class="seg">
-    <button id="tab-encrypt" class="active">🔒 Encrypt Text</button>
-    <button id="tab-decrypt">🔓 Decrypt Emojis</button>
-  </div>
+ <h1 id="pageTitle">Text 2 Emoji</h1>
+ <div class="controls">
+   <div class="seg">
+     <button id="tab-encrypt" class="active" type="button">🔒 Encrypt Text</button>
+     <button id="tab-decrypt" type="button">🔓 Decrypt Emojis</button>
+   </div>
+ </div>
+ <form id="mainForm" onsubmit="return false;">
+   <label id="label-input">1. Type a message</label>
+   <textarea id="textInput" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Hello World or write some javascript code."></textarea>
+   <label>2. Set a password</label>
+   <input id="password" type="password" autocomplete="new-password" placeholder="E.g. My$StrongPass123"/>
+   <label id="label-action">3. Encrypt message</label>
+   <button class="btn" id="actionBtn" type="button">🔒 Encrypt Text</button>
+   <div class="result" id="resultBox"></div>
+   <div class="copy-group">
+     <button class="copyBtn" id="copyBtn" type="button">📋 Copy</button>
+     <button class="copyBtn" id="clearBtn" type="button">🧹 Clear</button>
+   </div>
+   <div id="err" class="error" style="display:none"></div>
+ </form>
+ <div class="share-section">
+   <button id="shareWhatsapp" title="Share on WhatsApp" type="button"><i class="fab fa-whatsapp"></i></button>
+   <button id="shareTwitter" title="Share on Twitter" type="button"><i class="fab fa-twitter"></i></button>
+   <button id="shareFacebook" title="Share on Facebook" type="button"><i class="fab fa-facebook-f"></i></button>
+   <button id="shareEmail" title="Email" type="button"><i class="fas fa-envelope"></i></button>
+ </div>
 </div>
-
-<form id="mainForm" onsubmit="return false;">
-  <label id="label-input">1. Type a message</label>
-  <textarea id="textInput" placeholder="Hello World or write some javascript code."></textarea>
-
-  <label>2. Set a password</label>
-  <input id="password" type="password" placeholder="E.g. My$StrongPass123"/>
-  <div class="password-strength"><div id="passwordStrengthBar" class="password-strength-bar"></div></div>
-  <div id="strengthText" class="strength-text"></div>
-
-  <label id="label-action">3. Encrypt message</label>
-  <button class="btn" id="actionBtn">🔒 Encrypt Text</button>
-
-  <div class="result" id="resultBox"></div>
-
-  <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;">
-    <button class="copyBtn" id="copyBtn">📋 Copy</button>
-    <button class="copyBtn" id="clearBtn">🧹 Clear</button>
-  </div>
-
-  <div id="err" class="error" style="display:none"></div>
-</form>
-
-<div class="share-section">
-  <button id="shareWhatsapp" title="Share on WhatsApp"><i class="fab fa-whatsapp"></i></button>
-  <button id="shareTwitter" title="Share on Twitter"><i class="fab fa-twitter"></i></button>
-  <button id="shareFacebook" title="Share on Facebook"><i class="fab fa-facebook-f"></i></button>
-  <button id="shareEmail" title="Email"><i class="fas fa-envelope"></i></button>
+<!-- FAQ Section Accordion -->
+<div class="faq-section">
+  <h2>FAQ</h2>
+  <ul class="faq-list">
+    <li>
+      <div class="faq-q">
+        <span>What does this app do?</span>
+        <span class="faq-toggle-icon"><i class="fa fa-chevron-right"></i></span>
+      </div>
+      <div class="faq-a">It lets you encrypt any text message into an emoji string with a password, or decrypt back to text using the same password. Only those with the password can recover the original message.</div>
+    </li>
+    <li>
+      <div class="faq-q">
+        <span>Is this secure?</span>
+        <span class="faq-toggle-icon"><i class="fa fa-chevron-right"></i></span>
+      </div>
+      <div class="faq-a">Yes: encryption uses AES-GCM (with PBKDF2 key derivation). However, make sure to use a strong password! Anyone with your password and the emoji code can decrypt the message.</div>
+    </li>
+    <li>
+      <div class="faq-q">
+        <span>What if I forget my password?</span>
+        <span class="faq-toggle-icon"><i class="fa fa-chevron-right"></i></span>
+      </div>
+      <div class="faq-a">You cannot decrypt the emoji message. There is no password recovery—they never leave your device.</div>
+    </li>
+    <li>
+      <div class="faq-q">
+        <span>Why is my text turned into emojis?</span>
+        <span class="faq-toggle-icon"><i class="fa fa-chevron-right"></i></span>
+      </div>
+      <div class="faq-a">Emojis are used as a fun, visual way to encode the encrypted bytes. They don’t reveal any information about your original message.</div>
+    </li>
+    <li>
+      <div class="faq-q">
+        <span>How do I share my encrypted message?</span>
+        <span class="faq-toggle-icon"><i class="fa fa-chevron-right"></i></span>
+      </div>
+      <div class="faq-a">Simply copy the emoji string you get and send it to a friend (but keep the password secret!). You can also use the provided share buttons for WhatsApp, Twitter, Facebook, and email.</div>
+    </li>
+    <li>
+      <div class="faq-q">
+        <span>Does this store my data?</span>
+        <span class="faq-toggle-icon"><i class="fa fa-chevron-right"></i></span>
+      </div>
+      <div class="faq-a">No—your text, emoji string, and password are processed only in your browser. They are never sent to any server.</div>
+    </li>
+  </ul>
 </div>
-</div>
-
 <footer>Developed By ❤️ Mahmudul Hussain</footer>
-
 <script>
+// FAQ accordion logic
+document.querySelectorAll('.faq-q').forEach((el, idx) => {
+  el.onclick = function(){
+    let li = el.closest('li');
+    let isActive = li.classList.contains('active');
+    // Close all except current
+    document.querySelectorAll('.faq-list li').forEach(lix => lix.classList.remove('active'));
+    if(!isActive) li.classList.add('active');
+  }
+});
+
 const pageTitle=document.getElementById('pageTitle');
 const tabEncrypt=document.getElementById('tab-encrypt'),tabDecrypt=document.getElementById('tab-decrypt');
 const actionBtn=document.getElementById('actionBtn'),textInput=document.getElementById('textInput');
 const passwordInput=document.getElementById('password'),resultBox=document.getElementById('resultBox');
 const copyBtn=document.getElementById('copyBtn'),clearBtn=document.getElementById('clearBtn'),errEl=document.getElementById('err');
 const labelInput=document.getElementById('label-input'),labelAction=document.getElementById('label-action');
-const strengthBar=document.getElementById('passwordStrengthBar'),strengthText=document.getElementById('strengthText');
 let mode='encrypt';
 
 /* Mode switching */
@@ -167,26 +242,12 @@ function setMode(m){
     pageTitle.textContent='Emoji 2 Text';
   }
   textInput.value='';passwordInput.value='';resultBox.innerText='';
-  strengthBar.style.width='0%';strengthText.innerText='';
   clearErrors();
 }
 
 /* Error handling */
 function clearErrors(){errEl.style.display='none';errEl.innerText='';textInput.classList.remove('error');passwordInput.classList.remove('error');}
 function showError(msg){errEl.style.display='block';errEl.innerText=msg;}
-
-/* Password strength */
-passwordInput.addEventListener('input',()=>{
-  const score=calcStrength(passwordInput.value);
-  updateStrengthUI(score);
-});
-function calcStrength(p){let s=0;if(p.length>=8)s++;if(/[A-Z]/.test(p))s++;if(/[a-z]/.test(p))s++;if(/\d/.test(p))s++;if(/[\W_]/.test(p))s++;return s;}
-function updateStrengthUI(score){
-  const pct=(score/5)*100;strengthBar.style.width=pct+'%';
-  const levels=['Very Weak','Weak','Fair','Good','Strong','Very Strong'];
-  const colors=['#ff4d4d','#ff944d','#ffcc00','#99cc00','#00cc66','#00994d'];
-  strengthBar.style.backgroundColor=colors[score];strengthText.innerText=levels[score]||'';
-}
 
 /* Action button */
 actionBtn.onclick=async()=>{
@@ -210,7 +271,7 @@ copyBtn.onclick=async()=>{
   await navigator.clipboard.writeText(resultBox.innerText);
   copyBtn.innerText='Copied ✅';setTimeout(()=>copyBtn.innerText='📋 Copy',1400);
 };
-clearBtn.onclick=()=>{textInput.value='';passwordInput.value='';resultBox.innerText='';strengthBar.style.width='0%';strengthText.innerText='';clearErrors();};
+clearBtn.onclick=()=>{textInput.value='';passwordInput.value='';resultBox.innerText='';clearErrors();};
 
 /* Share buttons */
 function getResultEncoded(){return encodeURIComponent(resultBox.innerText.trim());}
@@ -225,6 +286,7 @@ darkModeToggle.onclick=()=>{
   document.body.classList.toggle('light');
   darkModeToggle.textContent=document.body.classList.contains('light')?'Dark Mode':'Light Mode';
   localStorage.setItem('theme',document.body.classList.contains('light')?'light':'dark');
+  darkModeToggle.setAttribute('aria-pressed',document.body.classList.contains('light'));
 };
 if(localStorage.getItem('theme')==='light'){document.body.classList.add('light');darkModeToggle.textContent='Dark Mode';}
 
@@ -243,3 +305,4 @@ async function decryptEmojiToText(emojiString,password){const b64=emojiStringToB
 </script>
 </body>
 </html>
+
